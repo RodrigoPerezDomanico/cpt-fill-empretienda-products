@@ -44,6 +44,8 @@ venv.bak/
 credentials.py
 .vscode
 prueba.py
+chromedriver.exe
+
 
 # DB
 players.db
@@ -53,9 +55,9 @@ test.py
 .Gittoken.txt
 googleIdentifier.txt
 APIKey.txt
+credentials.json
+credentials.py
 
 # Archivos de Prueba
 tagets.py
-credentials.json
-credentials.py
 token.json
