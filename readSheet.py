@@ -10,6 +10,16 @@ from googleapiclient.errors import HttpError
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
+def _pointManager(values):
+    unpointed_values=[]
+    for value in values:
+        new_price=int(str(value[1]).replace('.','').replace('$',''))
+        unpointed_values.append([value[0],new_price,value[2]])
+
+    return unpointed_values
+
+
+
 def getNewValues():
     SPREADSHEET_ID = '115MlBOna5noGZRmpdGrY6cm1wOf8xlJQZFHABcINNP0'
     RANGE_NAME ='Hoja 1!A2:C'
@@ -42,8 +52,11 @@ def getNewValues():
 
         # print('Name, Major:')
         # print (values)
-        return values
+        unpointed_values=_pointManager(values)
+        return unpointed_values
         
     except HttpError as err:
         print(err)
 
+# Values=getNewValues()
+# print(Values[0])

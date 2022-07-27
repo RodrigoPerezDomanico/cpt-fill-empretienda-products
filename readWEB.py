@@ -25,7 +25,7 @@ def editProductByIdx(i_prod,Values):
     PRODUCTNAMEXPATH='//*[@name="p_nombre"]'
     PRODUCTPRICEXPATH='//*[@name="p_precio"]'
     PRODUCTSTOCK='//*[@name="s_cantidad"]'
-    CHECKPRICEXPATH='//*[@name="p_mostrar_precio"]'
+    CHECKPRICEXPATH='//*[@name="p_mostrar_precio"][@type="checkbox"]'
     SUBMITBUTTON='//*[@id="root"]/div/main/div[2]/div/div[6]/div/div/div/div[1]/button'
     
 
@@ -39,11 +39,12 @@ def editProductByIdx(i_prod,Values):
         driver.execute_script("window.open('');")
         driver.switch_to.window(driver.window_handles[1])
         driver.get(prod_url)
-        time.sleep(2)
+        time.sleep(3)
         product_name = driver.find_element(By.XPATH, PRODUCTNAMEXPATH).get_attribute('value')
         product_price = driver.find_element(By.XPATH, PRODUCTPRICEXPATH).get_attribute('value')
         product_stock = driver.find_element(By.XPATH, PRODUCTSTOCK).get_attribute('value')
-        product_check_price = driver.find_element(By.XPATH, CHECKPRICEXPATH).get_attribute('value')
+        product_check_price = driver.find_element(By.XPATH, CHECKPRICEXPATH)
+        print(product_check_price.get_attribute('value'))
         # getNewValues(product_name)
             
         print(product_name)
@@ -51,12 +52,12 @@ def editProductByIdx(i_prod,Values):
             if value[0]==product_name:
                 if product_price!= value[1] or product_stock!= value[2]:
                     print(f'Actualizar precios de {product_name}')
-                    if product_check_price==0:
-                        driver.find_element(By.XPATH, CHECKPRICEXPATH).click()
+                    if product_check_price.get_attribute('value')=='0':
+                        product_check_price.click()
                     fillInput(PRODUCTPRICEXPATH,value[1])
                     fillInput(PRODUCTSTOCK,int(value[2]))
                     driver.find_element(By.XPATH, SUBMITBUTTON).click()
-                    time.sleep(1)
+                    time.sleep(3)
 
 
                     
@@ -70,21 +71,21 @@ def editProductByIdx(i_prod,Values):
         print('Hubo un error')
         return 0
 
-def editProduct(prod,Values):
-    # PRODUCTNAMESELECTOR='#p_nombre'
-    PRODUCTNAMEXPATH='//*[@name="p_nombre"]'
-    PRODUCTPRICEXPATH='//*[@name="p_precio"]'
-    PRODUCTSTOCK='//*[@name="s_cantidad"]'
+# def editProduct(prod,Values):
+#     # PRODUCTNAMESELECTOR='#p_nombre'
+#     PRODUCTNAMEXPATH='//*[@name="p_nombre"]'
+#     PRODUCTPRICEXPATH='//*[@name="p_precio"]'
+#     PRODUCTSTOCK='//*[@name="s_cantidad"]'
    
-    url=str('https://panel.empretienda.com/productos/'+str(prod))
-    driver.get(url)
-    time.sleep(3)
-    product_name = driver.find_element(By.XPATH, PRODUCTNAMEXPATH).get_attribute('value')
-    product_price = driver.find_element(By.XPATH, PRODUCTPRICEXPATH).get_attribute('value')
-    product_stock = driver.find_element(By.XPATH, PRODUCTSTOCK).get_attribute('value')
-    # getNewValues(product_name)
+#     url=str('https://panel.empretienda.com/productos/'+str(prod))
+#     driver.get(url)
+#     time.sleep(3)
+#     product_name = driver.find_element(By.XPATH, PRODUCTNAMEXPATH).get_attribute('value')
+#     product_price = driver.find_element(By.XPATH, PRODUCTPRICEXPATH).get_attribute('value')
+#     product_stock = driver.find_element(By.XPATH, PRODUCTSTOCK).get_attribute('value')
+#     # getNewValues(product_name)
     	
-    print(product_name)
+#     print(product_name)
 
 def expandProductsList():
     see_more_products=True
