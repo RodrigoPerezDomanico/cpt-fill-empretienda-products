@@ -6,6 +6,7 @@ import time
 from credentials import CREDENTIALS
 from readSheet import getNewValues
 from xpath import USERXPATH, PASSXPATH, BUTTONXPATH, LISTXPATH, EDIT_PRODUCTFULLXPATH
+from selenium.common.exceptions import NoSuchElementException
 
 
  
@@ -18,6 +19,14 @@ def fillInput(elm_xpath,fill_with):
     elem.clear()
     elem.send_keys(str(fill_with))
 
+def sendProductsOutOfWEB(Values):
+    products_out_of_web=[]
+    for value in Values:
+        if not value[4]:
+            products_out_of_web.append([value[0],value[3]])
+    print(products_out_of_web)
+    return products_out_of_web
+
 def editProductByIdx(i_prod,Values):
     # PRODUCTNAMESELECTOR='#p_nombre'
     IdxPRODUCTXPATH=f'/html/body/div[1]/div/main/div[5]/div/div[{i_prod}]/div/div/div/div/div[2]/div/div[4]/a'
@@ -25,6 +34,7 @@ def editProductByIdx(i_prod,Values):
     PRODUCTNAMEXPATH='//*[@name="p_nombre"]'
     PRODUCTPRICEXPATH='//*[@name="p_precio"]'
     PRODUCTSTOCK='//*[@name="s_cantidad"]'
+    PRODUCTCODEXPATH='//*[@name="s_sku"]'
     CHECKPRICEXPATH='//*[@name="p_mostrar_precio"][@type="checkbox"]'
     SUBMITBUTTON='//*[@id="root"]/div/main/div[2]/div/div[6]/div/div/div/div[1]/button'
     
@@ -43,21 +53,45 @@ def editProductByIdx(i_prod,Values):
         product_name = driver.find_element(By.XPATH, PRODUCTNAMEXPATH).get_attribute('value')
         product_price = driver.find_element(By.XPATH, PRODUCTPRICEXPATH).get_attribute('value')
         product_stock = driver.find_element(By.XPATH, PRODUCTSTOCK).get_attribute('value')
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        product_code = driver.find_element(By.XPATH, PRODUCTCODEXPATH).get_attribute('value') # Recordar revisar y cambiar -- por /, '/' esta en excel, -- en web
+        print(product_code,product_code.replace('--','/'))
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
         product_check_price = driver.find_element(By.XPATH, CHECKPRICEXPATH)
         print(product_check_price.get_attribute('value'))
         # getNewValues(product_name)
             
         print(product_name)
-        for value in Values:
-            if value[0]==product_name:
-                if product_price!= value[1] or product_stock!= value[2]:
+        for idx, value in enumerate(Values):
+            if value[3]==product_code.replace('--','/'):
+                Values[idx][4]=True
+
+                if product_check_price.get_attribute('value')=='0' and product_stock!=0:
+                    product_check_price.click()
                     print(f'Actualizar precios de {product_name}')
-                    if product_check_price.get_attribute('value')=='0':
-                        product_check_price.click()
-                    fillInput(PRODUCTPRICEXPATH,value[1])
-                    fillInput(PRODUCTSTOCK,int(value[2]))
-                    driver.find_element(By.XPATH, SUBMITBUTTON).click()
-                    time.sleep(3)
+                    if product_price!= value[1]:
+                        fillInput(PRODUCTPRICEXPATH,value[1])
+                    if product_stock!= value[2]:
+                        fillInput(PRODUCTSTOCK,int(value[2]))
+                    
+
+                elif product_check_price.get_attribute('value')=='1' and product_stock==0:
+                    product_check_price.click()
+
+                
+                    
+                    
+                driver.find_element(By.XPATH, SUBMITBUTTON).click()
+                time.sleep(3)
+                i_prod+=1
+                driver.close()
+                driver.switch_to.window(driver.window_handles[0])
+                return i_prod, Values
+                
 
 
                     
@@ -66,10 +100,11 @@ def editProductByIdx(i_prod,Values):
         i_prod+=1
         driver.close()
         driver.switch_to.window(driver.window_handles[0])
-        return i_prod
-    except IndexError:
-        print('Hubo un error')
-        return 0
+        return i_prod, Values
+    except NoSuchElementException:
+        print('Se terminaron los elementos de la lista')
+        # sendProductsOutOfWEB(Values)
+        return 0, Values
 
 # def editProduct(prod,Values):
 #     # PRODUCTNAMESELECTOR='#p_nombre'
@@ -103,7 +138,13 @@ def expandProductsList():
 
 
 
-
+def notRegistratedProducts(Values):
+    noRegistrated=[]
+    for value in Values:
+        if not value[4]:
+            noRegistrated.append([value[0],value[3]])
+    
+    return noRegistrated
 
 
 Xpath='/html/body/div[4]/div/nav[1]/ul/li[2]/ul/li[4]/a'
@@ -135,10 +176,16 @@ expandProductsList()
 i_prod=1
 while i_prod>0:
 # for i_prod in range(1,4):
-    i_prod=editProductByIdx(i_prod,SHEETSVALUES)
+    i_prod,SHEETSVALUES=editProductByIdx(i_prod,SHEETSVALUES)
 
 
 # elem.send_keys(Keys.RETURN)
 # assert "No results found." not in driver.page_source
+# print(SHEETSVALUES)
+not_edited=notRegistratedProducts(SHEETSVALUES)
+
+with open('ProductosNoRegistrados.txt','r') as f:
+    for product in not_edited:
+        f.write(f'{product} \n')
 time.sleep(1)
 driver.close()

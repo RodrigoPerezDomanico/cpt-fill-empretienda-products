@@ -14,7 +14,7 @@ def _pointManager(values):
     unpointed_values=[]
     for value in values:
         new_price=int(str(value[1]).replace('.','').replace('$',''))
-        unpointed_values.append([value[0],new_price,value[2]])
+        unpointed_values.append([value[0],new_price,value[2],value[3],False])
 
     return unpointed_values
 
@@ -22,7 +22,7 @@ def _pointManager(values):
 
 def getNewValues():
     SPREADSHEET_ID = '115MlBOna5noGZRmpdGrY6cm1wOf8xlJQZFHABcINNP0'
-    RANGE_NAME ='Hoja 1!A2:C'
+    RANGE_NAME ='Hoja 1!A2:D'
     creds = None
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
