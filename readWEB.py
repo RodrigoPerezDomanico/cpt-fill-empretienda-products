@@ -37,6 +37,7 @@ def editProductByIdx(i_prod,Values):
     PRODUCTCODEXPATH='//*[@name="s_sku"]'
     CHECKPRICEXPATH='//*[@name="p_mostrar_precio"][@type="checkbox"]'
     SUBMITBUTTON='//*[@id="root"]/div/main/div[2]/div/div[6]/div/div/div/div[1]/button'
+    PRODUCTTYPEXPATH='//*[@id="select-idCategorias"]'
     
 
    
@@ -53,11 +54,12 @@ def editProductByIdx(i_prod,Values):
         product_name = driver.find_element(By.XPATH, PRODUCTNAMEXPATH).get_attribute('value')
         product_price = driver.find_element(By.XPATH, PRODUCTPRICEXPATH).get_attribute('value')
         product_stock = driver.find_element(By.XPATH, PRODUCTSTOCK).get_attribute('value')
+        product_type = driver.find_element(By.XPATH, PRODUCTTYPEXPATH).text
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         product_code = driver.find_element(By.XPATH, PRODUCTCODEXPATH).get_attribute('value') # Recordar revisar y cambiar -- por /, '/' esta en excel, -- en web
-        print(product_code,product_code.replace('--','/'))
+        print(product_type)
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -67,36 +69,50 @@ def editProductByIdx(i_prod,Values):
             
         print(product_name)
         for idx, value in enumerate(Values):
-            if value[3]==product_code.replace('--','/'):
-                Values[idx][4]=True
+            if product_type == 'Notebooks':
+                if not product_code or product_check_price.get_attribute('value')=='0':
+                    if product_check_price.get_attribute('value')=='0':
+                        product_check_price.click() 
+                    fillInput(PRODUCTSTOCK,'0')
+                    fillInput(PRODUCTPRICEXPATH,'1')
+                    Values.append([product_name,'No vinculado','No vinculado','No vinculado',False])
+                    driver.find_element(By.XPATH, SUBMITBUTTON).click()
+                    time.sleep(3)
+                    i_prod+=1
+                    driver.close()
+                    driver.switch_to.window(driver.window_handles[0])
+                    return i_prod, Values
 
-                if product_check_price.get_attribute('value')=='0' and product_stock!=0:
-                    product_check_price.click()
-                    print(f'Actualizar precios de {product_name}')
-                    if product_price!= value[1]:
-                        fillInput(PRODUCTPRICEXPATH,value[1])
-                    if product_stock!= value[2]:
-                        fillInput(PRODUCTSTOCK,int(value[2]))
+                elif value[3]==product_code.replace('--','/'):
+                    Values[idx][4]=True
+
+                    if product_check_price.get_attribute('value')=='0' and product_stock!=0:
+                        product_check_price.click()
+                        print(f'Actualizar precios de {product_name}')
+                        if product_price!= value[1]:
+                            fillInput(PRODUCTPRICEXPATH,value[1])
+                        if product_stock!= value[2]:
+                            fillInput(PRODUCTSTOCK,int(value[2]))
+                        
+
+                    # elif product_check_price.get_attribute('value')=='1' and product_stock==0:
+                    #     product_check_price.click()
+
                     
-
-                elif product_check_price.get_attribute('value')=='1' and product_stock==0:
-                    product_check_price.click()
-
+                        
+                        
+                    driver.find_element(By.XPATH, SUBMITBUTTON).click()
+                    time.sleep(3)
+                    i_prod+=1
+                    driver.close()
+                    driver.switch_to.window(driver.window_handles[0])
+                    return i_prod, Values
                 
-                    
-                    
-                driver.find_element(By.XPATH, SUBMITBUTTON).click()
-                time.sleep(3)
-                i_prod+=1
-                driver.close()
-                driver.switch_to.window(driver.window_handles[0])
-                return i_prod, Values
-                
 
 
                     
 
-                    
+        #Values.append([product_name,'No vinculado'])                    
         i_prod+=1
         driver.close()
         driver.switch_to.window(driver.window_handles[0])
@@ -162,7 +178,7 @@ fillInput(USERXPATH,CREDENTIALS['user'])
 fillInput(PASSXPATH,CREDENTIALS['pass'])
 search_button = driver.find_element(By.XPATH, BUTTONXPATH)
 search_button.submit()
-time.sleep(3)
+time.sleep(7)
 driver.get("https://panel.empretienda.com/productos")
 time.sleep(2)
 
@@ -184,7 +200,7 @@ while i_prod>0:
 # print(SHEETSVALUES)
 not_edited=notRegistratedProducts(SHEETSVALUES)
 
-with open('ProductosNoRegistrados.txt','r') as f:
+with open('ProductosNoRegistrados.txt','w') as f:
     for product in not_edited:
         f.write(f'{product} \n')
 time.sleep(1)
