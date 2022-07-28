@@ -178,7 +178,7 @@ fillInput(USERXPATH,CREDENTIALS['user'])
 fillInput(PASSXPATH,CREDENTIALS['pass'])
 search_button = driver.find_element(By.XPATH, BUTTONXPATH)
 search_button.submit()
-time.sleep(7)
+time.sleep(5)
 driver.get("https://panel.empretienda.com/productos")
 time.sleep(2)
 
