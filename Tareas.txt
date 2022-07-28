@@ -1,0 +1,6 @@
+Actualizar Notebooks 
+Editar stock en 0 para Notebooks que no estan presentes en Santi
+Atualizar placas de video en STOCK
+Revisar tema placas a pedido
+Carga de servicios en la web (Productos Digitales)
+Eliminar secciin NOTEBOOKS en WEB
