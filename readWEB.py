@@ -73,7 +73,7 @@ def editProductByIdx(i_prod,Values):
                     if product_check_price.get_attribute('value')=='0':
                         product_check_price.click() 
                     fillInput(PRODUCTSTOCK,'0')
-                    fillInput(PRODUCTPRICEXPATH,'1')
+                    # fillInput(PRODUCTPRICEXPATH,'1')
                     Values.append([product_name,'No vinculado','No vinculado','No vinculado',False])
                     driver.find_element(By.XPATH, SUBMITBUTTON).click()
                     time.sleep(3)
@@ -155,11 +155,21 @@ def expandProductsList():
 
 def notRegistratedProducts(Values):
     noRegistrated=[]
+    Registrated=[]
     for value in Values:
         if not value[4]:
             noRegistrated.append([value[0],value[3]])
+        else:
+            Registrated.append([value[0],value[3]])
     
-    return noRegistrated
+    return noRegistrated, Registrated
+def saveEdition(not_edited,edited):
+    with open('ProductosNoRegistrados.txt','w') as f:
+        for product in not_edited:
+            f.write(f'{product} \n')
+    with open('ProductosRegistrados.txt','w') as f:
+        for product in edited:
+            f.write(f'{product} \n')
 
 
 Xpath='/html/body/div[4]/div/nav[1]/ul/li[2]/ul/li[4]/a'
@@ -198,10 +208,9 @@ while i_prod>0:
 # elem.send_keys(Keys.RETURN)
 # assert "No results found." not in driver.page_source
 # print(SHEETSVALUES)
-not_edited=notRegistratedProducts(SHEETSVALUES)
+not_edited,edited=notRegistratedProducts(SHEETSVALUES)
 
-with open('ProductosNoRegistrados.txt','w') as f:
-    for product in not_edited:
-        f.write(f'{product} \n')
+saveEdition(not_edited,edited)
+
 time.sleep(1)
 driver.close()

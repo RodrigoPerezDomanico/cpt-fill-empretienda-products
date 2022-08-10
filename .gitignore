@@ -61,3 +61,7 @@ credentials.py
 # Archivos de Prueba
 tagets.py
 token.json
+
+ProductosNoRegistrados.txt
+ProductosRegistrados.txt
+tokenOld.json
