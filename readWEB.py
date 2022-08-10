@@ -166,6 +166,7 @@ Xpath='/html/body/div[4]/div/nav[1]/ul/li[2]/ul/li[4]/a'
 
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
+# options.add_argument('headless')
 try:
     driver = webdriver.Chrome('./chromedriver.exe',chrome_options=options)
 except:

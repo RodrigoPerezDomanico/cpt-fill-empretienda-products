@@ -1,5 +1,5 @@
 Actualizar Notebooks 
-Editar stock en 0 para Notebooks que no estan presentes en Santi
+Editar stock en 0 para Notebooks que no estan presentes en Santi-- Agregarles precio referencia
 Atualizar placas de video en STOCK
 Revisar tema placas a pedido
 Carga de servicios en la web (Productos Digitales)
