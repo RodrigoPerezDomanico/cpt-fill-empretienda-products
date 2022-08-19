@@ -12,9 +12,29 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 def _pointManager(values):
     unpointed_values=[]
+
+    
     for value in values:
-        new_price=int(str(value[1]).replace('.','').replace('$',''))
-        unpointed_values.append([value[0],new_price,value[2],value[3],False])
+        print(value[1])
+        if value[1]!='#REF!':
+            new_price=str(value[1])
+            new_price=int(new_price.replace(' ', '').replace('.', '').replace('$', ''))
+            # new_price=str(new_price).replace(' ','')
+            # if value[-1].find('.')!=-1:
+            #     new_price=str(value[1]).replace('.','')
+            #     unpointed=True
+            # if value[-1].find('$')!=-1:
+            #     if unpointed:
+            #         new_price=new_price.replace('$','')
+            #     else:
+            #         new_price = str(value[-1].replace('$',''))
+            #     unsigned=True
+            # if unsigned or unpointed:
+            #     print(new_price)
+            #     new_price=int(new_price)
+            # else:
+            #     print(value)
+            unpointed_values.append([value[0],new_price,value[2],value[3],False])
 
     return unpointed_values
 
